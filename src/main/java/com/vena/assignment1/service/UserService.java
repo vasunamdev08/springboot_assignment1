@@ -3,14 +3,16 @@ package com.vena.assignment1.service;
 import com.vena.assignment1.dao.UserRepository;
 import com.vena.assignment1.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -29,6 +31,10 @@ public class UserService {
         if(user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
             throw new RuntimeException("User details are incomplete");
         }
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("User already exists with email: " + user.getEmail());
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -44,8 +50,14 @@ public class UserService {
 
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(user.getPassword());
+        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(existingUser);
     }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()->
+                    new RuntimeException("User not found with email: " + email));
+    }
+
 }
