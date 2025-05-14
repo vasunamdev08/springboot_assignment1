@@ -44,13 +44,11 @@ public class CustomUserImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        System.out.println("Password: " + user.getPassword());
         return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        System.out.println("Email: " + user.getEmail());
         return user.getEmail();
     }
 }

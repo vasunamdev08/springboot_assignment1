@@ -21,12 +21,15 @@ public class SignupController {
         userService.addUser(user);
         return "User registered successfully";
     }
+
     @GetMapping("/home")
     public String home(){
         return "Welcome to the home page";
     }
+
     @GetMapping("/error")
     public String error(){
         return "Error occurred";
     }
+
 }
